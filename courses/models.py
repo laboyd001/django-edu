@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
+from .fields import OrderField
+
 
 
 class Subject(models.Model):
@@ -51,9 +53,17 @@ class Module(models.Model):
                               on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    # field is named order and is calculated with respect to the 
+    # course by setting 'for_fields=['course']
+    # this means that the order for a new module will be assigned adding 1 to the module
+    # of the last module of the same course
+    order = OrderField(blank=True, for_fields=['course'])
+
+    class Meta:
+        ordering = ['order']
 
     def __str__(self):
-        return self.title
+        return '{}. {}'.format(self.order, self.title)
 
 
 class Content(models.Model):
@@ -74,6 +84,12 @@ class Content(models.Model):
                                                        'file')})
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
+    # order is calculated with respect to the module field
+    order = OrderField(blank=True, for_fields=['module'])
+
+    class Meta:
+        ordering = ['order']
+
 
 
 class ItemBase(models.Model):
