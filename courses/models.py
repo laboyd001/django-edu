@@ -78,10 +78,10 @@ class Content(models.Model):
                                     # limit_choices limits ContentType that can be used
                                     # model__in is a field lookup to filter the query to ContentType objects
                                      limit_choices_to={'model__in':(
-                                                       'text',
-                                                       'video',
-                                                       'image',
-                                                       'file')})
+                                                                                            'text',
+                                                                                            'video',
+                                                                                            'image',
+                                                                                            'file')})
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
     # order is calculated with respect to the module field
