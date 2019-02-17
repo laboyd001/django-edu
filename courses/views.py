@@ -166,6 +166,8 @@ class CourseModuleUpdateView(TemplateResponseMixin, View):
         return self.render_to_response({'course': self.course,
                                         'formset': formset})
 
+
+
 # ===================================================================================
 # content
 # ===================================================================================
@@ -266,5 +268,22 @@ class ContentDeleteView(View):
         content.item.delete()
         content.delete()
         return redirect('module_content_list', module.id)
+
+
+class ModuleContentListView(TemplateResponseMixin, View):
+    '''view that displays all modules for a course and lists contents for a specific module
+    '''
+
+    template_name = 'courses/manage/module/content_list.html'
+
+    def get(self, request, module_id):
+        '''method for getting the module obj with given id that belongs to current user and renders a template with the given module
+        '''
+
+        module = get_object_or_404(Module,
+                                    id=module_id,
+                                    course__owner=request.user)
+        
+        return self.render_to_response({'module': module})
 
 
