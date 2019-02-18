@@ -12,6 +12,7 @@ from django.apps import apps
 
 from .models import Course, Module, Content
 from .forms import ModuleFormSet
+from braces.views import CsrfExemptMixin, JsonRequestResponseMixin
 
 # ===================================================================================
 # courses
@@ -269,6 +270,9 @@ class ContentDeleteView(View):
         content.delete()
         return redirect('module_content_list', module.id)
 
+# ===================================================================================
+# Module and Content List View
+# ===================================================================================
 
 class ModuleContentListView(TemplateResponseMixin, View):
     '''view that displays all modules for a course and lists contents for a specific module
@@ -285,5 +289,34 @@ class ModuleContentListView(TemplateResponseMixin, View):
                                     course__owner=request.user)
         
         return self.render_to_response({'module': module})
+
+# ===================================================================================
+# ReOrder Modules and contents
+# ===================================================================================
+
+class ModuleOrderView(CsrfExemptMixin,
+                    JsonRequestResponseMixin,
+                    View):
+    '''view that recieves the new order of modules' ID encoded in JSON
+    '''
+    
+    def post(self, request):
+        for id, order in self.request_json.items():
+            Module.objects.filter(id=id,
+                    course__owner=request.user).update(order=order)
+        return self.render_json_response({'saved': 'OK'})
+
+class ContentOrderView(CsrfExemptMixin,
+                    JsonRequestResponseMixin,
+                    View):
+    '''view that recieves the new order of content's ID encoded in JSON
+    '''
+    
+    def post(self, request):
+        for id, order in self.request_json.items():
+            Content.objects.filter(id=id,
+                        module__course__owner=request.user) \
+                            .update(order=order)
+        return self.render_json_response({'saved': 'OK'})
 
 

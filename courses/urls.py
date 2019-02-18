@@ -39,4 +39,12 @@ urlpatterns = [
     path('module/<int:module_id>/',
         views.ModuleContentListView.as_view(),
         name = 'module_content_list'),
+    # reorder modules
+    path('module/order/',
+        views.ModuleOrderView.as_view(),
+        name = 'module_order'),
+    # reorder content    
+    path('content/order/',
+        views.ContentOrderView.as_view(),
+        name = 'content_order'),
 ]
