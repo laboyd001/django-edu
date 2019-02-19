@@ -38,6 +38,10 @@ class Course(models.Model):
     overview = models.TextField()
     # date and time when course was created
     created = models.DateTimeField(auto_now_add=True)
+    # users that are enrolled in a course
+    students = models.ManyToManyField(User,
+                                    related_name='course_joined',
+                                    blank=True)
 
     class Meta:
         ordering = ['created']
